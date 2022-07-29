@@ -575,7 +575,7 @@ weasyprint = {git = "https://github.com/upsole/WeasyPrint.git", branch = "master
 type = "git"
 url = "https://github.com/upsole/twt_tools"
 reference = "master"
-resolved_reference = "a6dddaca49d6778eaa4996f0da1461ffb630429b"
+resolved_reference = "040f5e08a9a06f4acce85b85b56c6ca0be3eefcf"
 
 [[package]]
 name = "typing-extensions"
