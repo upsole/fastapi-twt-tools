@@ -18,3 +18,12 @@ async def thread_pdf(url):
 
 def delete_pdf(name):
     os.remove(f"{name}.pdf")
+
+async def user_data(url):
+    pass
+#     user = User(url)
+#     return user.__repr__()
+
+async def user_json(url, limit):
+    user = User(url)
+    return user.get_tweets(limit)
