@@ -54,6 +54,7 @@ def build_html(archive):
     for t in archive:
         tweets_html += (f"""<div>
         <h5> {t['date']}</h5>
+        <a href={t['url']}> Go to Tweet </a>
         <p> {t['rawContent']} </p>
         """ +
             quote_tweet_html(t) 

@@ -1,15 +1,19 @@
+import dotenv
+import os
 from fastapi import FastAPI, BackgroundTasks, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
 from snscrape.base import ScraperException
+
 
 from api.controllers import thread_json, thread_pdf, delete_pdf, user_json, user_data, user_html
 from api.lib import is_valid_tweet, is_valid_username
 
-app = FastAPI()
 
-origins = ["http://localhost:5173"]
+dotenv.load_dotenv()
+app = FastAPI()
+ORIGIN= os.environ.get("CORS_ORIGIN")
+origins = [ORIGIN]
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST"])
 
 
@@ -19,11 +23,6 @@ def health_route():
 
 
 # TODO Thread HTML
-# @app.post("/thread/json")
-# async def get_json(id):
-#     res = await thread_json(id)
-#     return res
-
 
 @app.get("/thread/{id}")
 async def get_pdf(background_tasks: BackgroundTasks, id):
@@ -35,8 +34,15 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
         res = await thread_pdf(id)
     except ScraperException:
         raise HTTPException(status_code=404, detail="Tweet not found")
+    except:
+        raise HTTPException(status_code=404, detail="Tweet not found")
 
     return res
+
+# @app.get("/user/json")
+# async def get_user_json(id, limit=10):
+#     res = await user_json(id, limit)
+#     return res
 
 @app.get("/user/archive", response_class=HTMLResponse)
 async def get_user_html(id, limit=10):
