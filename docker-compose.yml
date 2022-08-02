@@ -1,0 +1,9 @@
+version: '1'
+services:
+    fastapi_twt_tools:
+        container_name: twt_api
+        build: ./
+        ports: 
+         - '4000:4000'
+        env_file:
+         - ./.env
