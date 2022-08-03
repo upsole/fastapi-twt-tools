@@ -8,8 +8,8 @@ authors = ["piotr <upsol@protonmail.com>"]
 python = "^3.10"
 twt-tools = {git = "https://github.com/upsole/twt_tools"}
 fastapi = "^0.79.0"
-uvicorn = "^0.18.2"
 python-dotenv = "^0.20.0"
+uvicorn = {extras = ["standard"], version = "^0.18.2"}
 
 [tool.poetry.dev-dependencies]
 
