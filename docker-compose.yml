@@ -4,6 +4,6 @@ services:
         container_name: twt_api
         build: ./
         ports: 
-         - '4000:4000'
+         - "${COMPOSE_PORT}"
         env_file:
          - ./.env
