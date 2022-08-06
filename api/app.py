@@ -46,6 +46,9 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
 
 @app.get("/user/archive", response_class=HTMLResponse)
 async def get_user_html(id, limit=10):
+    if int(limit) > 500 or int(limit) == 0:
+        limit = 500
+
     if not is_valid_username(id):
         raise HTTPException(status_code=400, detail="Invalid username")
 
