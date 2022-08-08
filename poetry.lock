@@ -253,7 +253,7 @@ woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
 
 [[package]]
 name = "frozenlist"
-version = "1.3.0"
+version = "1.3.1"
 description = "A list-like structure which implements collections.abc.MutableSequence"
 category = "main"
 optional = false
@@ -594,7 +594,7 @@ weasyprint = {git = "https://github.com/upsole/WeasyPrint.git", branch = "master
 type = "git"
 url = "https://github.com/upsole/twt_tools"
 reference = "master"
-resolved_reference = "040f5e08a9a06f4acce85b85b56c6ca0be3eefcf"
+resolved_reference = "669798778ca6be06e315fc0cc73c2cfa02af1814"
 
 [[package]]
 name = "typing-extensions"
@@ -710,11 +710,11 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "yarl"
-version = "1.7.2"
+version = "1.8.1"
 description = "Yet another URL library"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 idna = ">=2.0"
