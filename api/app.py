@@ -39,11 +39,6 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
 
     return res
 
-# @app.get("/user/json")
-# async def get_user_json(id, limit=10):
-#     res = await user_json(id, limit)
-#     return res
-
 @app.get("/user/archive", response_class=HTMLResponse)
 async def get_user_html(id, limit=10):
     if int(limit) > 500 or int(limit) == 0:
