@@ -1,3 +1,4 @@
 .env
 __pycache__/
 todo
+dev_database.sh
