@@ -1,5 +1,21 @@
 version: '1'
 services:
+    db:
+      container_name: twt_db
+      image: postgres
+      ports:
+        - "5433:5432"
+      volumes:
+        - db:/var/lib/postgrsql/data
+      env_file:
+        - .env
+      healthcheck: 
+        test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+        interval: 5s
+        timeout: 10s
+        retries: 5
+      restart: on-failure
+
     fastapi_twt_tools:
         container_name: twt_api
         build: ./
@@ -7,3 +23,6 @@ services:
          - "${COMPOSE_PORT}"
         env_file:
          - ./.env
+volumes:
+  db:
+    driver: local
