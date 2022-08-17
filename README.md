@@ -22,7 +22,7 @@ You need to set up `CORS_ORIGIN` if you intend to use it with a  frontend applic
 `COMPOSE_PORT` is used by docker compose.
 
 ### Docker and Nginx
-`nginx` contains some lightweigth config for a reverse proxy with rate limiting
+`nginx` contains some lightweight config for a reverse proxy with rate limiting
 capabilities. Swap $DOMAIN_NAME with your domain and replace the files in your 
 server nginx directory.
 

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from snscrape.base import ScraperException
 
 
-from api.controllers import thread_json, thread_pdf, delete_pdf, user_json, user_data, user_html
+from api.controllers import thread_json, thread_pdf, delete_pdf, user_json, user_data, user_html, single_tweet
 from api.lib import is_valid_tweet, is_valid_username
 
 
@@ -31,7 +31,8 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
 
     try:
         background_tasks.add_task(delete_pdf, id)
-        res = await thread_pdf(id)
+        tweet_exists = await single_tweet(id)
+        if tweet_exists: res = await thread_pdf(id)
     except ScraperException:
         raise HTTPException(status_code=404, detail="Tweet not found")
     except:

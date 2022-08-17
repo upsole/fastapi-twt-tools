@@ -1,4 +1,5 @@
 from twt_tools.thread import Thread
+from twt_tools.lib.lib import scrape_tweet
 from twt_tools.user import User
 from fastapi.responses import FileResponse
 import os
@@ -7,6 +8,9 @@ import os
 async def thread_json(url):
     thread = Thread(url=url, thread_name=url, output_dir="")
     return thread.thread
+
+async def single_tweet(url):
+    return scrape_tweet(url)
 
 
 async def thread_pdf(url):
