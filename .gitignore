@@ -2,3 +2,5 @@
 __pycache__/
 todo
 dev_database.sh
+build_files/
+*.pdf

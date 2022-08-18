@@ -6,8 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from snscrape.base import ScraperException
 
 
-from api.controllers import thread_json, thread_pdf, delete_pdf, user_json, user_data, user_html, single_tweet
+from api.controllers import thread_json, scrape_thread_to_pdf, delete_pdf, user_json, user_data, user_html, single_tweet
 from api.lib import is_valid_tweet, is_valid_username
+from api.db.crud import session_scope, insert_job
 
 
 dotenv.load_dotenv()
@@ -30,15 +31,21 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
         raise HTTPException(status_code=400, detail="Invalid tweet ID")
 
     try:
-        background_tasks.add_task(delete_pdf, id)
-        tweet_exists = await single_tweet(id)
-        if tweet_exists: res = await thread_pdf(id)
+        # background_tasks.add_task(delete_pdf, "build_files/"+id)
+        await single_tweet(id)
+        # BUG it's still blocking wtf?
+        background_tasks.add_task(scrape_thread_to_pdf, id)
+        with session_scope() as s:
+            new_job = insert_job(s, "build_files/"+id+".pdf")
+            print(new_job)
+
     except ScraperException:
         raise HTTPException(status_code=404, detail="Tweet not found")
-    except:
-        raise HTTPException(status_code=404, detail="Tweet not found")
+    # except:
+    #     raise HTTPException(status_code=500, detail="Most useful error of your life")
 
-    return res
+    # TODO return job as JSON
+    return {"job": new_job}
 
 @app.get("/user/archive", response_class=HTMLResponse)
 async def get_user_html(id, limit=10):

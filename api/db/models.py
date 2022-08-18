@@ -1,6 +1,7 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, String, Integer
-# from sqlalchemy.dialects.postgresql
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
 Base = declarative_base()
 
@@ -8,7 +9,7 @@ class Job(Base):
     __tablename__ = "job"
 
     # TODO use uuid
-    id = Column(Integer, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     # TODO must be enum of "inprogress" "failed" "success"
     status = Column(String)
     file = Column(String)

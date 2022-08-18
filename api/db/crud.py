@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
 
-import models
+import api.db.models as models
 
 # DATABASE_URL = os.environ.get("DATABASE_URL")
 DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/twt_db"
@@ -24,7 +24,7 @@ def session_scope():
         session.close()
 
 def _reset_db():
-    models.Base.metadata.drop_all(engine)
+    # models.Base.metadata.drop_all(engine)
     models.Base.metadata.create_all(engine)
 
 def _populate(session):
@@ -34,11 +34,16 @@ def _populate(session):
     session.commit()
     print("Table job populated")
 
+def insert_job(session, filename):
+    job = models.Job(status="pending", file=filename)
+    session.add(job)
+    session.commit()
+    return job
 
 if __name__ == "__main__":
     _reset_db()
-    with session_scope() as s:
-        _populate(s)
+    # with session_scope() as s:
+    #     _populate(s)
     print("DB Reset")
 
     # with session_scope() as s:

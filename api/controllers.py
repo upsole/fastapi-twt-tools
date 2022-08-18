@@ -13,14 +13,15 @@ async def single_tweet(url):
     return scrape_tweet(url)
 
 
-async def thread_pdf(url):
-    thread = Thread(url=url, thread_name=url, output_dir="")
-    await thread.async_build_markdown()
+def scrape_thread_to_pdf(url):
+    thread = Thread(url=url, thread_name=url, output_dir="build_files")
+    thread.build_markdown()
     thread.build_pdf()
     thread.cleanup()
+    # filepath = f"build_files/{thread.thread_name}.pdf"
+    # return filepath
 
-    filepath = f"{thread.thread_name}.pdf"
-    return FileResponse(filepath)
+    # TODO updates related job entry when done
 
 
 def delete_pdf(name):
