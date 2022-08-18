@@ -1,11 +1,12 @@
 from sqlalchemy import create_engine
 from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
+import os
 
 import api.db.models as models
 
-# DATABASE_URL = os.environ.get("DATABASE_URL")
-DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/twt_db"
+DATABASE_URL = str(os.environ.get("DATABASE_URL"))
+# DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/twt_db"
 
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind = engine)
@@ -24,6 +25,7 @@ def session_scope():
 
 def _reset_db():
     # models.Base.metadata.drop_all(engine)
+    print(DATABASE_URL)
     models.Base.metadata.create_all(engine)
 
 def _populate(session):

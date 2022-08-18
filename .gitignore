@@ -1,6 +1,11 @@
 .env
 __pycache__/
-todo
-dev_database.sh
 files/
 *.pdf
+*.html
+
+todo
+.container
+.local
+container.sh
+local.sh

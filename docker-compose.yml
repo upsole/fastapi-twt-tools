@@ -4,7 +4,7 @@ services:
       container_name: twt_db
       image: postgres
       ports:
-        - "5433:5432"
+        - "${POSTGRES_COMPOSE_PORT}"
       volumes:
         - db:/var/lib/postgrsql/data
       env_file:
@@ -23,6 +23,10 @@ services:
          - "${COMPOSE_PORT}"
         env_file:
          - ./.env
+        depends_on: 
+          db:
+            condition: service_healthy
+        restart: unless-stopped
 volumes:
   db:
     driver: local
