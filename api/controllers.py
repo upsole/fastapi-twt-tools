@@ -27,7 +27,7 @@ def scrape_thread_to_pdf(url, job_id):
         print("Filename", filename)
         if os.path.isfile(filename):
             with session_scope() as s:
-                update_job(s, job_id, file=filename)
+                update_job(s, job_id, file=filename, status="success")
         else:
             with session_scope() as s:
                 update_job(s, job_id, status="failed")
@@ -42,7 +42,13 @@ async def serve_thread_pdf(job_id):
     if job["status"] == "success": return FileResponse(job["file"], filename="twt_thread.pdf")
     return job
 
-def delete_pdf(job_id):
+async def serve_user_html(job_id):
+    with session_scope() as s:
+        job = query_job(s, job_id)
+    if job["status"] == "success": return FileResponse(job["file"])
+    return job
+
+def delete_file_and_record(job_id):
     with session_scope() as s:
         job = query_job(s, job_id)
 
@@ -79,7 +85,7 @@ def media_html(tweet):
     else:
         return ""
 
-def build_html(archive):
+def build_body(archive):
     tweets_html = ""
     for t in archive:
         tweets_html += (f"""<div>
@@ -96,13 +102,30 @@ def build_html(archive):
     return tweets_html
 
 
-async def user_html(url, limit):
-    archive = User(url)
-    html = f"""<html> 
-    <head>
-        <title> {archive.get_user().username}'s archive </title>
-    </head>
-    {build_html(archive.get_tweets(limit))}
-    </html>
-    """
-    return html
+def build_html(url, limit, job_id):
+    try:
+        output_dir=FILES_DIR
+        os.makedirs(output_dir, exist_ok=True)
+        archive = User(url)
+        html = f"""<html> 
+        <head>
+            <title> {archive.get_user().username}'s archive </title>
+        </head>
+        {build_body(archive.get_tweets(limit))}
+        </html>
+        """
+        filename = output_dir + str(archive.get_user().username) + ".html"
+        f = open(filename, "w")
+        f.write(html)
+        f.close()
+
+        if os.path.isfile(filename):
+            with session_scope() as s:
+                update_job(s, job_id, file=filename, status="success")
+        else:
+            with session_scope() as s:
+                update_job(s, job_id, status="failed")
+    except:
+    # if build panics -> set job to failed
+        with session_scope() as s:
+            update_job(s, job_id, status="failed")
