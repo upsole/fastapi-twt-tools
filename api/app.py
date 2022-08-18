@@ -7,6 +7,7 @@ from snscrape.base import ScraperException
 
 
 from api.controllers import (
+    delete_pdf,
     scrape_thread_to_pdf,
     serve_thread_pdf,
     user_html,
@@ -52,9 +53,10 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
 
 
 @app.get("/pdf/{job_id}")
-async def serve_pdf(job_id):
+async def serve_pdf(background_tasks: BackgroundTasks, job_id):
     try:
         res = await serve_thread_pdf(job_id)
+        background_tasks.add_task(delete_pdf, job_id)
         return res
     except:
         raise HTTPException(status_code=400, detail="Wrong id")

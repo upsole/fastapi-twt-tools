@@ -48,13 +48,11 @@ def update_job(session, job_id, status="success", file=None):
     session.query(models.Job).filter(models.Job.id == job_id).update({"status": status, "file": file})
     session.commit()
 
+def delete_job(session, job_id):
+    session.query(models.Job).filter(models.Job.id == job_id).delete()
+    session.commit()
+
 if __name__ == "__main__":
     _reset_db()
-    # with session_scope() as s:
-    #     _populate(s)
-    print("DB Reset")
+    print("Migrations done.")
 
-    # with session_scope() as s:
-    #     populate(s)
-    # print("Table reseted")
-    # pass

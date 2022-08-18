@@ -2,7 +2,7 @@ from twt_tools.thread import Thread
 from twt_tools.lib.lib import scrape_tweet
 from twt_tools.user import User
 from fastapi.responses import FileResponse
-from api.db.crud import session_scope, insert_job, update_job, query_job
+from api.db.crud import session_scope, insert_job, update_job, query_job, delete_job
 import os
 
 FILES_DIR = "files/"
@@ -38,13 +38,19 @@ def scrape_thread_to_pdf(url, job_id):
 
 async def serve_thread_pdf(job_id):
     with session_scope() as s:
-        query_job(s, job_id)
         job = query_job(s, job_id)
-    if job["status"] == "success": return FileResponse(job["file"])
+    if job["status"] == "success": return FileResponse(job["file"], filename="twt_thread.pdf")
     return job
 
-def delete_pdf(name):
-    os.remove(f"{name}.pdf")
+def delete_pdf(job_id):
+    with session_scope() as s:
+        job = query_job(s, job_id)
+
+    if job["status"] == "success":
+        print("File sent, deleting job from DB and file")
+        with session_scope() as s:
+            delete_job(s, job_id)
+        os.remove(job["file"])
 
 
 async def user_data(url):
