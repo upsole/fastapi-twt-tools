@@ -1,7 +1,7 @@
 from twt_tools.thread import Thread
 from twt_tools.lib.lib import scrape_tweet
 from twt_tools.user import User
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from api.db.crud import session_scope, insert_job, update_job, query_job, delete_job
 import os
 
@@ -36,17 +36,23 @@ def scrape_thread_to_pdf(url, job_id):
         with session_scope() as s:
             update_job(s, job_id, status="failed")
 
-async def serve_thread_pdf(job_id):
+async def check_job_status(job_id):
     with session_scope() as s:
         job = query_job(s, job_id)
-    if job["status"] == "success": return FileResponse(job["file"], filename="twt_thread.pdf")
+    if job["status"] == "success": return {"status": job["status"], "format": job["format"], "downloadUrl": DOMAIN_NAME + "/file/"+ str(job["id"]) }
     return job
 
-async def serve_user_html(job_id):
+async def serve_file(job_id):
     with session_scope() as s:
         job = query_job(s, job_id)
-    if job["status"] == "success": return FileResponse(job["file"])
-    return job
+    if job["status"] != "success": 
+        raise BaseException("Job not finished or not found.")
+    if job["format"] == "pdf":
+        return FileResponse(job["file"])
+    elif job["format"] == "html":
+        with open(job["file"], "r") as file:
+            html = file.read()
+        return HTMLResponse(html)
 
 def delete_file_and_record(job_id):
     with session_scope() as s:

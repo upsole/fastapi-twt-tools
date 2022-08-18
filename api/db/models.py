@@ -12,6 +12,7 @@ class Job(Base):
     # TODO must be enum of "inprogress" "failed" "success"
     status = Column(String)
     file = Column(String)
+    format = Column(String)
 
     # TODO expiresAt (?)
     # TODO createdAt (?)

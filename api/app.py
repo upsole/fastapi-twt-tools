@@ -5,13 +5,12 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from snscrape.base import ScraperException
 
-
 from api.controllers import (
     delete_file_and_record,
     scrape_thread_to_pdf,
-    serve_thread_pdf,
-    serve_user_html,
+    serve_file,
     build_html,
+    check_job_status,
     single_tweet,
     DOMAIN_NAME,
 )
@@ -41,25 +40,22 @@ async def get_pdf(background_tasks: BackgroundTasks, id):
     try:
         await single_tweet(id)
         with session_scope() as s:
-            new_job = insert_job(s)
+            new_job = insert_job(s, "pdf")
         background_tasks.add_task(scrape_thread_to_pdf, id, new_job["id"])
 
     except ScraperException:
         raise HTTPException(status_code=404, detail="Tweet not found")
 
     # TODO make this dev dependendant // In prod only return job object, no url
-    return {"job": new_job, "url": DOMAIN_NAME + "/pdf/"+ str(new_job["id"])}
+    return {"job": new_job, "url": DOMAIN_NAME + "/job/"+ str(new_job["id"])}
 
-
-@app.get("/pdf/{job_id}")
-async def serve_pdf(background_tasks: BackgroundTasks, job_id):
+@app.get("/job/{job_id}", status_code=202)
+async def check_job(job_id):
     try:
-        res = await serve_thread_pdf(job_id)
-        background_tasks.add_task(delete_file_and_record, job_id)
+        res = await check_job_status(job_id)
         return res
     except:
         raise HTTPException(status_code=400, detail="Wrong id")
-
 
 @app.get("/user", status_code=202)
 async def get_user_html(background_tasks: BackgroundTasks, id, limit=10):
@@ -68,7 +64,7 @@ async def get_user_html(background_tasks: BackgroundTasks, id, limit=10):
 
     try:
         with session_scope() as s:
-            new_job = insert_job(s)
+            new_job = insert_job(s, "html")
         background_tasks.add_task(build_html, id, int(limit), new_job["id"])
 
     except ValueError:
@@ -79,12 +75,12 @@ async def get_user_html(background_tasks: BackgroundTasks, id, limit=10):
     except ScraperException:
         raise HTTPException(status_code=404, detail="Tweet not found")
 
-    return {"job": new_job, "url": DOMAIN_NAME + "/html/"+ str(new_job["id"])}
+    return {"job": new_job, "url": DOMAIN_NAME + "/job/"+ str(new_job["id"])}
 
-@app.get("/html/{job_id}")
-async def serve_html(background_tasks: BackgroundTasks, job_id):
+@app.get("/file/{job_id}")
+async def serve(background_tasks: BackgroundTasks, job_id):
     try:
-        res = await serve_user_html(job_id)
+        res = await serve_file(job_id)
         background_tasks.add_task(delete_file_and_record, job_id)
         return res
     except:

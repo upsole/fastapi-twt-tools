@@ -35,8 +35,8 @@ def _populate(session):
     session.commit()
     print("Table job populated")
 
-def insert_job(session, filename=None):
-    job = models.Job(status="pending", file=filename)
+def insert_job(session, file_format, filename=None):
+    job = models.Job(status="pending", file=filename, format=file_format)
     session.add(job)
     session.commit()
     # return {col.name: getattr(job, col.name) for col in job.__table__.columns}
