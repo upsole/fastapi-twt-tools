@@ -1,4 +1,3 @@
-import os
 from sqlalchemy import create_engine
 from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
@@ -34,11 +33,20 @@ def _populate(session):
     session.commit()
     print("Table job populated")
 
-def insert_job(session, filename):
+def insert_job(session, filename=None):
     job = models.Job(status="pending", file=filename)
     session.add(job)
     session.commit()
-    return job
+    # return {col.name: getattr(job, col.name) for col in job.__table__.columns}
+    return job.dict()
+
+def query_job(session, job_id):
+    job = session.query(models.Job).filter(models.Job.id == job_id).first()
+    return job.dict()
+
+def update_job(session, job_id, status="success", file=None):
+    session.query(models.Job).filter(models.Job.id == job_id).update({"status": status, "file": file})
+    session.commit()
 
 if __name__ == "__main__":
     _reset_db()
