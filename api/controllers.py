@@ -40,6 +40,7 @@ async def check_job_status(job_id):
     with session_scope() as s:
         job = query_job(s, job_id)
     if job["status"] == "success": return {"status": job["status"], "format": job["format"], "downloadUrl": DOMAIN_NAME + "/file/"+ str(job["id"]) }
+    elif job["status"] == "failed": raise BaseException
     return job
 
 async def serve_file(job_id):
