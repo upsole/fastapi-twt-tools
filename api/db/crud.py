@@ -6,7 +6,6 @@ import os
 import api.db.models as models
 
 DATABASE_URL = str(os.environ.get("DATABASE_URL"))
-# DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/twt_db"
 
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind = engine)
@@ -24,16 +23,7 @@ def session_scope():
         session.close()
 
 def _reset_db():
-    # models.Base.metadata.drop_all(engine)
-    print(DATABASE_URL)
     models.Base.metadata.create_all(engine)
-
-def _populate(session):
-    for i in range(10):
-        job = models.Job(status="success", file="pog.pdf")
-        session.add(job)
-    session.commit()
-    print("Table job populated")
 
 def insert_job(session, file_format, filename=None):
     job = models.Job(status="pending", file=filename, format=file_format)

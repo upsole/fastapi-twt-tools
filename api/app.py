@@ -1,7 +1,6 @@
 import dotenv
 import os
 from fastapi import FastAPI, BackgroundTasks, HTTPException
-from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from snscrape.base import ScraperException
 
@@ -27,10 +26,6 @@ app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", 
 @app.get("/ok")
 def health_route():
     return {"message": "Server is running!"}
-
-
-# TODO Thread HTML
-
 
 @app.get("/thread/{id}", status_code=202)
 async def get_pdf(background_tasks: BackgroundTasks, id):
@@ -85,6 +80,3 @@ async def serve(background_tasks: BackgroundTasks, job_id):
         return res
     except:
         raise HTTPException(status_code=400, detail="Wrong id")
-
-
-# TODO Scrap Only media files of thread

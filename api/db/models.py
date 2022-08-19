@@ -14,9 +14,6 @@ class Job(Base):
     file = Column(String)
     format = Column(String)
 
-    # TODO expiresAt (?)
-    # TODO createdAt (?)
-
     def __repr__(self):
         return f"<Job #{self.id} - Status: {self.status}>"
     def dict(self):

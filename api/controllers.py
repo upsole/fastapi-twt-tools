@@ -23,8 +23,8 @@ def scrape_thread_to_pdf(url, job_id):
         thread.build_pdf()
         thread.cleanup()
 
-        filename = FILES_DIR+thread.thread_name+".pdf"
-        print("Filename", filename)
+        # filename = FILES_DIR+thread.thread_name+".pdf"
+        filename = os.path.join(FILES_DIR, thread.thread_name + ".pdf")
         if os.path.isfile(filename):
             with session_scope() as s:
                 update_job(s, job_id, file=filename, status="success")
@@ -65,65 +65,14 @@ def delete_file_and_record(job_id):
         os.remove(job["file"])
 
 
-async def user_data(url):
+async def _user_data(url):
     pass
-
-
-async def user_json(url, limit):
-    user = User(url)
-    return user.get_tweets(limit)
-
-def quote_tweet_html(tweet):
-    if tweet["quotedTweet"]:
-        return f"- Quoting: <a href={tweet['quotedTweet']['url']}> {tweet['quotedTweet']['url']} </a>"
-    else:
-        return ""
-
-def media_html(tweet):
-    if tweet["media"]:
-        html = ""
-        for i in tweet["media"]:
-            if i.get('fullUrl'):
-                html += f"<a href={i['fullUrl']}><img src={i['previewUrl']} height=180 width=360></a>"
-            if i.get('variants'):
-                html += f"<a href={i['variants'][0]['url']}> <img src={i['variants'][0]['url']} height=200 width=360> </a>"
-        return html
-    else:
-        return ""
-
-def build_body(archive):
-    tweets_html = ""
-    for t in archive:
-        tweets_html += (f"""<div>
-        <h5> {t['date']}</h5>
-        <a href={t['url']}> Go to Tweet </a>
-        <p> {t['rawContent']} </p>
-        """ +
-            quote_tweet_html(t) 
-            + media_html(t) +
-        """
-        <hr>
-        </div>
-        """)
-    return tweets_html
-
 
 def build_html(url, limit, job_id):
     try:
-        output_dir=FILES_DIR
-        os.makedirs(output_dir, exist_ok=True)
-        archive = User(url)
-        html = f"""<html> 
-        <head>
-            <title> {archive.get_user().username}'s archive </title>
-        </head>
-        {build_body(archive.get_tweets(limit))}
-        </html>
-        """
-        filename = output_dir + str(archive.get_user().username) + ".html"
-        f = open(filename, "w")
-        f.write(html)
-        f.close()
+        archive = User(url, output_dir=FILES_DIR)
+        filename = os.path.join(FILES_DIR, archive.get_user().username + ".html")
+        archive.build_html(limit=limit)
 
         if os.path.isfile(filename):
             with session_scope() as s:
