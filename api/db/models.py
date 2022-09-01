@@ -1,5 +1,5 @@
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Float
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
@@ -13,6 +13,7 @@ class Job(Base):
     status = Column(String)
     file = Column(String)
     format = Column(String)
+    progress = Column(Float, default=0)
 
     def __repr__(self):
         return f"<Job #{self.id} - Status: {self.status}>"

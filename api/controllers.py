@@ -2,7 +2,7 @@ from twt_tools.thread import Thread
 from twt_tools.lib.lib import scrape_tweet
 from twt_tools.user import User
 from fastapi.responses import FileResponse, HTMLResponse
-from api.db.crud import session_scope, insert_job, update_job, query_job, delete_job
+from api.db.crud import session_scope, update_job, query_job, delete_job, UserObserver, ThreadObserver
 import os
 
 FILES_DIR = "files/"
@@ -19,6 +19,7 @@ async def single_tweet(url):
 def scrape_thread_to_pdf(url, job_id):
     try:
         thread = Thread(url=url, thread_name=url, output_dir=FILES_DIR)
+        thread.attach(ThreadObserver(job_id))
         thread.build_markdown()
         thread.build_pdf()
         thread.cleanup()
@@ -73,6 +74,7 @@ def build_html(url, limit, job_id):
     try:
         archive = User(url, output_dir=FILES_DIR)
         filename = os.path.join(FILES_DIR, archive.get_user().username + ".html")
+        archive.attach(UserObserver(job_id))
         archive.build_html(limit=limit)
 
         if os.path.isfile(filename):
